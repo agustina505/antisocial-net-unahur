@@ -1,6 +1,6 @@
 import type { User, Post, Comment, PostImage, Tag } from '../types';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3001';
 
 //HELPER PARA MANEJAR RESPUESTAS
 async function handleResponse<T>(response: Response): Promise<T> {
