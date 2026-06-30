@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { Login } from './components/auth/Login';
+//import { Login } from './components/auth/Login';
+import { LoginPage } from './pages/LoginPage';
 import { Register } from './components/auth/Register';
 import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
@@ -82,7 +83,7 @@ const AppContent: React.FC = () => {
       <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={
             <ProtectedRoute>
