@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.css'
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 //import { Login } from './components/auth/Login';
@@ -8,6 +9,7 @@ import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 import { PostDetail } from './pages/PostDetail';
 import { CreatePost } from './pages/CreatePost';
+
 
 // Componente para rutas protegidas
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
