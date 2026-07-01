@@ -1,75 +1,74 @@
-# React + TypeScript + Vite
+# UnaHur Anti-Social Net
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Trabajo Práctico N°2** – Construcción de Interfaces de Usuario  
+> **UnaHur Anti-Social Net** – Frontend en React + TypeScript
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📋 Descripción del Proyecto
 
-## React Compiler
+**UnaHur Anti-Social Net** es una red social desarrollada como parte del Trabajo Práctico N°2 de la materia *Construcción de Interfaces de Usuario* en la Universidad Nacional de Hurlingham.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+La aplicación permite a los usuarios:
 
-## Expanding the ESLint configuration
+- **Iniciar sesión** con nickName y contraseña fija (`123456`)
+- **Registrarse** como nuevos usuarios
+-  **Ver el feed** de publicaciones recientes en la página de inicio
+-  **Ver el detalle** de una publicación y sus comentarios
+-  **Comentar** en cualquier publicación
+-  **Ver su perfil** con todas sus publicaciones
+-  **Crear nuevas publicaciones** con descripción, etiquetas e imágenes
+-  **Cerrar sesión**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+El proyecto utiliza una **API REST** provista por la cátedra, y toda la lógica de autenticación es simulada (sin JWT).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Tecnologías Utilizadas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Tecnología | Descripción |
+|------------|-------------|
+| **React 18** | Biblioteca para construir interfaces de usuario |
+| **TypeScript 5** | Tipado estático para JavaScript |
+| **Vite** | Bundler rápido para desarrollo y producción |
+| **React Router DOM 6** | Navegación entre vistas y rutas protegidas |
+| **Fetch API** | Consumo de endpoints REST (nativo, sin axios) |
+| **CSS Modules / CSS Nativo** | Estilos personalizados con soporte para tema claro/oscuro |
+| **localStorage** | Persistencia de sesión (usuario logueado) |
+| **React Context** | Gestión global del estado de autenticación |
+
+---
+
+## Instalación y Ejecución
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/unahur-anti-social-net.git
+cd unahur-anti-social-net
+
+```
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+### 3. Configurar backend
+
+```bash
+git clone https://github.com/lucasfigarola/backend-api.git
+cd backend-api
+npm install
+npm start
+# El servidor correrá en http://localhost:3001
+```
+
+### 4.Iniciar el front-end
+
+```bash
+npm run dev
 
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+El proyecto estará disponible en http://localhost:5173
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
