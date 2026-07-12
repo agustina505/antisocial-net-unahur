@@ -9,7 +9,7 @@
 
 **UnaHur Anti-Social Net** es una red social desarrollada como parte del Trabajo Práctico N°2 de la materia *Construcción de Interfaces de Usuario* en la Universidad Nacional de Hurlingham.
 
-La interfaz está inspirada en un timeline estilo Twitter/X: una barra de navegación lateral fija y un feed centrado con las publicaciones.
+La interfaz utiliza un layout de dos columnas: una barra de navegación lateral fija y un feed centrado tipo timeline con las publicaciones.
 
 La aplicación permite a los usuarios:
 
