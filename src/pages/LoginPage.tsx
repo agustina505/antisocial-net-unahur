@@ -9,7 +9,7 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  
+
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
@@ -49,7 +49,7 @@ export const LoginPage: React.FC = () => {
       const foundUser = users.find(
         (u) => u.nickName.toLowerCase() === nickName.toLowerCase()
       );
-      
+
       if (!foundUser) {
         setError('Usuario no encontrado. ¿Estás registrado?');
         setIsLoading(false);
@@ -70,7 +70,6 @@ export const LoginPage: React.FC = () => {
 
       login(foundUser);
       navigate('/');
-      
     } catch (error) {
       console.error('Error en login:', error);
       setError('Error al conectar con el servidor. Verifica tu conexión.');
@@ -80,24 +79,24 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      minHeight: 'calc(100vh - 200px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem'
-    }}>
+    <div
+      style={{
+        minHeight: 'calc(100vh - 200px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+      }}
+    >
       <div className="card">
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>
-            ¡Bienvenido!
-          </h1>
+          <h1 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>¡Bienvenido!</h1>
           <p style={{ color: 'var(--text)', fontSize: '0.95rem' }}>
             Ingresa a tu cuenta de UnaHur Anti-Social Net
           </p>
         </div>
-        
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit} noValidate>
           <div style={{ marginBottom: '1.25rem' }}>
             <label htmlFor="nickName">NickName</label>
             <input
@@ -106,7 +105,6 @@ export const LoginPage: React.FC = () => {
               value={nickName}
               onChange={(e) => setNickName(e.target.value)}
               placeholder="Ej: juan123"
-              required
               disabled={isLoading}
             />
           </div>
@@ -119,7 +117,6 @@ export const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Ingresa tu contraseña"
-              required
               disabled={isLoading}
             />
             <div style={{ marginTop: '0.5rem' }}>
@@ -129,21 +126,25 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '1.75rem',
-            flexWrap: 'wrap',
-            gap: '0.5rem'
-          }}>
-            <label style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              fontWeight: '400'
-            }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1.75rem',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                fontWeight: '400',
+              }}
+            >
               <input
                 type="checkbox"
                 checked={rememberMe}
@@ -152,24 +153,18 @@ export const LoginPage: React.FC = () => {
               />
               Recordarme
             </label>
-            <Link to="/register">
-              ¿No tienes cuenta? → Registrarse
-            </Link>
+            <Link to="/register">¿No tienes cuenta? → Registrarse</Link>
           </div>
 
-          {error && (
-            <div className="error-message">
-              ⚠️ {error}
-            </div>
-          )}
+          {error && <div className="error-message">⚠️ {error}</div>}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
-            style={{ 
+            style={{
               width: '100%',
               padding: '0.85rem',
-              fontSize: '1.05rem'
+              fontSize: '1.05rem',
             }}
           >
             {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}

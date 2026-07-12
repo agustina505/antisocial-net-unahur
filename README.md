@@ -1,75 +1,119 @@
-# React + TypeScript + Vite
+# UnaHur Anti-Social Net
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Trabajo Práctico N°2** – Construcción de Interfaces de Usuario
+> **UnaHur Anti-Social Net** – Frontend en React + TypeScript
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Descripción del Proyecto
 
-## React Compiler
+**UnaHur Anti-Social Net** es una red social desarrollada como parte del Trabajo Práctico N°2 de la materia *Construcción de Interfaces de Usuario* en la Universidad Nacional de Hurlingham.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+La interfaz está inspirada en un timeline estilo Twitter/X: una barra de navegación lateral fija y un feed centrado con las publicaciones.
 
-## Expanding the ESLint configuration
+La aplicación permite a los usuarios:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Iniciar sesión** con nickName y contraseña fija (`123456`)
+- **Registrarse** como nuevos usuarios
+- **Ver el feed** de publicaciones recientes en la página de inicio
+- **Ver el detalle** de una publicación, sus etiquetas, imágenes y comentarios
+- **Comentar** en cualquier publicación
+- **Ver su perfil** con todas sus publicaciones
+- **Crear nuevas publicaciones** con descripción, URLs de imágenes y selección de etiquetas existentes
+- **Cerrar sesión**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+El proyecto utiliza una **API REST** provista por la cátedra (a modo de "caja negra", sin modificaciones), y toda la lógica de autenticación es simulada (sin JWT).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🌐 API utilizada
+
+Este proyecto consume el backend provisto por la cátedra:
+
+**Repositorio:** [https://github.com/lucasfigarola/backend-api](https://github.com/lucasfigarola/backend-api)
+
+Corriendo localmente, queda disponible en:
 
 ```
+http://localhost:3001
+```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Tecnologías Utilizadas
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Tecnología | Descripción |
+|------------|-------------|
+| **React 18** | Biblioteca para construir interfaces de usuario |
+| **TypeScript 5** | Tipado estático para JavaScript |
+| **Vite** | Bundler rápido para desarrollo y producción |
+| **React Router DOM 6** | Navegación entre vistas y rutas protegidas |
+| **Fetch API** | Consumo de endpoints REST (nativo, sin axios) |
+| **CSS nativo** | Estilos personalizados con soporte para tema claro/oscuro y layout tipo timeline |
+| **localStorage** | Persistencia de sesión (usuario logueado) |
+| **React Context** | Gestión global del estado de autenticación |
+
+---
+
+## Instalación y Ejecución
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/unahur-anti-social-net.git
+cd unahur-anti-social-net
+```
+
+### 2. Instalar dependencias del frontend
+
+```bash
+npm install
+```
+
+### 3. Configurar y correr el backend
+
+En otra carpeta (fuera del proyecto del frontend):
+
+```bash
+git clone https://github.com/lucasfigarola/backend-api.git
+cd backend-api
+npm install
+node seed.js   # crea la base de datos SQLite con datos de ejemplo
+npm start
+# El servidor correrá en http://localhost:3001
+```
+
+
+### 4. Iniciar el frontend
+
+Con el backend ya corriendo en `http://localhost:3001`:
+
+```bash
+npm run dev
+```
+
+El proyecto estará disponible en [http://localhost:5173](http://localhost:5173)
+
+---
+
+## Estructura del proyecto
 
 ```
+src/
+├── api/            # Funciones de consumo de la API (fetch)
+├── components/
+│   ├── auth/       # Register
+│   └── common/     # Sidebar, PostCard, PostFeed, ProtectedRoute
+├── context/        # AuthContext (sesión global)
+├── pages/          # Home, LoginPage, Profile, PostDetail, CreatePost
+├── types/          # Interfaces de TypeScript (User, Post, Comment, Tag, etc.)
+├── index.css       # Estilos globales y layout
+└── App.tsx         # Rutas y estructura general
+```
+
+---
+
+## Integrantes del grupo
+
+  Fontivero Agustina
+

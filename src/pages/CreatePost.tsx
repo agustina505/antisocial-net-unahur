@@ -1,49 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { postsApi, postImagesApi } from '../api/api';
-
-interface PostFormData {
-  description: string;
-  tags: string;
-  imageUrls: string;
-}
+import { postsApi, postImagesApi, tagsApi } from '../api/api';
+import type { Tag } from '../types';
 
 export const CreatePost: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
-  const [formData, setFormData] = useState<PostFormData>({
-    description: '',
-    tags: '',
-    imageUrls: '',
-  });
+
+  const [description, setDescription] = useState('');
+  const [imageUrls, setImageUrls] = useState('');
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(true);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  // Redirigir si no está logueado
   React.useEffect(() => {
     if (!user) {
       navigate('/login');
     }
   }, [user, navigate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Traer las etiquetas disponibles desde la API para armar la selección
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const tags = await tagsApi.getAll();
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error('Error al cargar etiquetas:', error);
+      } finally {
+        setTagsLoading(false);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  const toggleTag = (tagId: number) => {
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       navigate('/login');
       return;
     }
 
-    // Validar que la descripción no esté vacía
-    if (!formData.description.trim()) {
+    if (!description.trim()) {
       setError('La descripción es obligatoria');
       return;
     }
@@ -53,44 +63,22 @@ export const CreatePost: React.FC = () => {
     setSuccess(false);
 
     try {
-      // 1. Crear el post
-      const tagsArray = formData.tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag !== '');
-
-      const postData = {
-        description: formData.description.trim(),
+      const newPost = await postsApi.create({
+        description: description.trim(),
         userId: user.id,
-        tags: tagsArray.length > 0 ? tagsArray : undefined,
-      };
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+      });
 
-      const newPost = await postsApi.create(postData);
-
-      // 2. Si hay URLs de imágenes, subirlas
-      const imageUrlsArray = formData.imageUrls
-        .split(',')
-        .map(url => url.trim())
-        .filter(url => url !== '');
+      const imageUrlsArray = imageUrls.split(',').map((u) => u.trim()).filter(Boolean);
 
       if (imageUrlsArray.length > 0) {
-        const imagePromises = imageUrlsArray.map(url =>
-          postImagesApi.create({
-            url: url,
-            postId: newPost.id,
-          })
+        await Promise.all(
+          imageUrlsArray.map((url) => postImagesApi.create({ url, postId: newPost.id }))
         );
-        
-        await Promise.all(imagePromises);
       }
 
-      // 3. Mostrar éxito y redirigir
       setSuccess(true);
-      
-      setTimeout(() => {
-        navigate('/profile');
-      }, 2000);
-      
+      setTimeout(() => navigate('/profile'), 1500);
     } catch (error) {
       console.error('Error al crear publicación:', error);
       if (error instanceof Error) {
@@ -103,174 +91,91 @@ export const CreatePost: React.FC = () => {
     }
   };
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <Link 
-        to="/profile" 
-        style={{ 
-          display: 'inline-block', 
-          marginBottom: '1.5rem', 
-          color: '#3498db', 
-          textDecoration: 'none',
-          fontWeight: 'bold'
-        }}
-      >
-        ← Volver a mi perfil
-      </Link>
+    <div className="timeline">
+      <Link to="/profile" className="back-link">← Volver a mi perfil</Link>
 
-      <div style={{ 
-        background: 'white', 
-        padding: '2rem', 
-        borderRadius: '8px', 
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
-          Crear Nueva Publicación
-        </h2>
-        
-        {success && (
-          <div style={{ 
-            background: '#d4edda', 
-            color: '#155724', 
-            padding: '1rem', 
-            borderRadius: '4px', 
-            marginBottom: '1rem',
-            textAlign: 'center'
-          }}>
-            ✅ ¡Publicación creada exitosamente! Redirigiendo...
-          </div>
-        )}
+      <div className="composer">
+        <div className="avatar avatar-md">{user.nickName.charAt(0).toUpperCase()}</div>
+        <form onSubmit={handleSubmit} noValidate>
+          <textarea
+            name="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="¿Qué estás pensando?"
+            disabled={loading || success}
+            rows={3}
+          />
 
-        <form onSubmit={handleSubmit}>
-          {/* Descripción */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              Descripción *
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="¿Qué estás pensando?"
-              required
-              disabled={loading || success}
-              rows={4}
-              style={{ 
-                width: '100%', 
-                padding: '0.75rem', 
-                border: '1px solid #ddd', 
-                borderRadius: '4px', 
-                fontSize: '1rem',
-                resize: 'vertical',
-                fontFamily: 'inherit'
-              }}
-            />
-            <small style={{ color: '#666', display: 'block', marginTop: '0.25rem' }}>
-              Describe tu publicación (máximo 500 caracteres)
-            </small>
-          </div>
-
-          {/* Etiquetas */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              Etiquetas
-            </label>
-            <input
-              name="tags"
-              type="text"
-              value={formData.tags}
-              onChange={handleChange}
-              placeholder="Ej: viaje, comida, tecnología"
-              disabled={loading || success}
-              style={{ 
-                width: '100%', 
-                padding: '0.75rem', 
-                border: '1px solid #ddd', 
-                borderRadius: '4px', 
-                fontSize: '1rem'
-              }}
-            />
-            <small style={{ color: '#666', display: 'block', marginTop: '0.25rem' }}>
-              Separa las etiquetas con comas. Ej: viaje, comida, tecnología
-            </small>
-          </div>
-
-          {/* URLs de imágenes */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-              URLs de imágenes
-            </label>
+          <div style={{ marginTop: '0.75rem' }}>
             <input
               name="imageUrls"
               type="text"
-              value={formData.imageUrls}
-              onChange={handleChange}
-              placeholder="https://ejemplo.com/imagen1.jpg, https://ejemplo.com/imagen2.jpg"
+              value={imageUrls}
+              onChange={(e) => setImageUrls(e.target.value)}
+              placeholder="URLs de imágenes separadas por coma (opcional)"
               disabled={loading || success}
-              style={{ 
-                width: '100%', 
-                padding: '0.75rem', 
-                border: '1px solid #ddd', 
-                borderRadius: '4px', 
-                fontSize: '1rem'
-              }}
             />
-            <small style={{ color: '#666', display: 'block', marginTop: '0.25rem' }}>
-              Separa las URLs con comas. Las imágenes se mostrarán en la publicación.
-            </small>
           </div>
 
+          <div style={{ marginTop: '1rem' }}>
+            <label style={{ marginBottom: '0.5rem' }}>Etiquetas</label>
+            {tagsLoading ? (
+              <p style={{ color: 'var(--text)', fontSize: '0.9rem' }}>Cargando etiquetas...</p>
+            ) : availableTags.length === 0 ? (
+              <p style={{ color: 'var(--text)', fontSize: '0.9rem' }}>No hay etiquetas disponibles.</p>
+            ) : (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {availableTags.map((tag) => {
+                  const isSelected = selectedTagIds.includes(tag.id);
+                  return (
+                    <button
+                      type="button"
+                      key={tag.id}
+                      onClick={() => toggleTag(tag.id)}
+                      disabled={loading || success}
+                      style={{
+                        padding: '0.4rem 1rem',
+                        borderRadius: '999px',
+                        fontSize: '0.85rem',
+                        fontWeight: 500,
+                        border: `1px solid ${isSelected ? 'transparent' : 'var(--border)'}`,
+                        background: isSelected ? 'var(--accent)' : 'transparent',
+                        color: isSelected ? 'white' : 'var(--text-h)',
+                      }}
+                    >
+                      #{tag.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {success && (
+            <div className="success-message" style={{ marginTop: '0.75rem' }}>
+              ✅ ¡Publicación creada! Redirigiendo...
+            </div>
+          )}
+
           {error && (
-            <div style={{ 
-              background: '#fee', 
-              color: '#c0392b', 
-              padding: '0.75rem', 
-              borderRadius: '4px', 
-              marginBottom: '1rem' 
-            }}>
+            <div className="error-message" style={{ marginTop: '0.75rem' }}>
               ❌ {error}
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button 
-              type="button" 
+          <div className="composer-footer">
+            <button
+              type="button"
               onClick={() => navigate('/profile')}
               disabled={loading || success}
-              style={{ 
-                flex: 1,
-                padding: '0.75rem', 
-                background: '#95a5a6', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                cursor: 'pointer'
-              }}
+              style={{ background: 'transparent', color: 'var(--text)', border: '1px solid var(--border)' }}
             >
               Cancelar
             </button>
-            <button 
-              type="submit" 
-              disabled={loading || success || !formData.description.trim()}
-              style={{ 
-                flex: 2,
-                padding: '0.75rem', 
-                background: '#27ae60', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                cursor: loading || success ? 'not-allowed' : 'pointer',
-                opacity: loading || success || !formData.description.trim() ? 0.6 : 1
-              }}
-            >
+            <button type="submit" disabled={loading || success || !description.trim()}>
               {loading ? 'Publicando...' : 'Publicar'}
             </button>
           </div>
