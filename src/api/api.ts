@@ -89,12 +89,7 @@ export async function del<T>(endpoint: string): Promise<T> {
   }
 }
 
-// ===== HELPER: mapa de usuarios en memoria =====
-// El backend no incluye el User relacionado en posts/comments,
-// así que lo resolvemos acá: pedimos todos los users una vez
-// y los "pegamos" por userId. Se cachea 30s para no golpear
-// /users en cada render.
-
+//HELPER: mapa de usuarios en memoria
 let usersCache: User[] | null = null;
 let usersCacheTime = 0;
 const USERS_CACHE_MS = 30_000;
@@ -105,8 +100,7 @@ async function getUsersMap(): Promise<Map<number, User>> {
     usersCache = await get<User[]>('/users');
     usersCacheTime = now;
   }
-  // Normalizamos a Number: si el backend manda id como string,
-  // el Map no matchea contra userId numérico (o viceversa).
+  
   return new Map(usersCache.map((u) => [Number(u.id), u]));
 }
 
@@ -126,8 +120,7 @@ function attachUserToComment(comment: Comment, usersMap: Map<number, User>): Com
   };
 }
 
-// El backend tampoco incluye las imágenes en /posts, así que las
-// pedimos aparte (igual que con el usuario) y las pegamos.
+
 async function attachImagesToPost(post: Post): Promise<Post> {
   if (post.images && post.images.length > 0) {
     return post;
@@ -141,9 +134,7 @@ async function attachImagesToPost(post: Post): Promise<Post> {
   }
 }
 
-// El backend manda "Tags" como array de objetos {id, name, ...}
-// (por la relación belongsToMany), pero el frontend espera
-// "tags" como array de strings. Normalizamos acá.
+
 function normalizeTags(post: Post): Post {
   if (post.tags && post.tags.length > 0) {
     return post;
