@@ -26,7 +26,7 @@ El proyecto utiliza una **API REST** provista por la cátedra (a modo de "caja n
 
 ---
 
-## 🌐 API utilizada
+## API utilizada
 
 Este proyecto consume el backend provisto por la cátedra:
 
@@ -40,7 +40,7 @@ http://localhost:3001
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 | Tecnología | Descripción |
 |------------|-------------|
@@ -60,8 +60,8 @@ http://localhost:3001
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/unahur-anti-social-net.git
-cd unahur-anti-social-net
+git clone https://github.com/agustina505/antisocial-net-unahur.git
+cd antisocial-net-unahur
 ```
 
 ### 2. Instalar dependencias del frontend
